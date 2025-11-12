@@ -1,11 +1,8 @@
 # Low-Income-Housing-Finder
 ## Overview
-A paragraph explaining your work, who you are, and why you made it (Please don't
-write that you made it because you are forced to do so by your DCP4300 instructor.
-Your future employers may see this and we have industry partners who might see
-this...).
+I created this project to provide a question answering system that provides answers to factual questions regarding low-income housing since there are many confusing government websites and complicated application rules associated with information about low-income housing in Gainesville.
 ### Authors
-Mention who you are and link to your GitHub, LinkedIn, or personal website.
+Ryan Uliasz https://www.linkedin.com/in/ryan-uliasz-a0b99b2b2/  
 ### Example Input and Output
 | Input | Output |
 |----------------------------|---------------------------|

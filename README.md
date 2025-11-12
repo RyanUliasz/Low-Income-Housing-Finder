@@ -7,4 +7,5 @@ Ryan Uliasz https://www.linkedin.com/in/ryan-uliasz-a0b99b2b2/
 | Input | Output |
 |----------------------------|---------------------------|
 |<img width="851" height="323" alt="image" src="https://github.com/user-attachments/assets/ee486cd9-2cd3-42f0-b466-584cca61a50b" />
- |“The maximum amount of income for an individual in Section 8 housing in Gainesville is $34,650.”
+ |<img width="853" height="80" alt="image" src="https://github.com/user-attachments/assets/d994060f-3133-4c70-926d-d43d6cbcf1d1" />
+

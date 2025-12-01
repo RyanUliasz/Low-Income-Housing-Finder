@@ -21,25 +21,17 @@ Ryan Uliasz
 import re
 from typing import Dict, List, Optional, Any
 
-# ==============================================================================
-# 1. CONTEXT CORPUS (Structured Data from All Four Sheets)
-#    Source: HUD & Florida Housing Finance Corporation, Alachua County (2025/2026)
-# ==============================================================================
-
-# Sheet 2: HUD Median Family Income, 2025
 MEDIAN_INCOME: Dict[str, Any] = {
     'Alachua County': 106700
 }
 
-# Sheet 1: HUD Fair Market Rent, 2026
 FAIR_MARKET_RENT: Dict[str, Any] = {
     '0 Bedroom FMR': 1154, '1 Bedroom FMR': 1246, '2 Bedroom FMR': 1493,
     '3 Bedroom FMR': 1868, '4 Bedroom FMR': 1977
 }
 
-# Sheet 3: Florida Housing Income Limits, 2025
 INCOME_LIMITS: List[Dict[str, Any]] = [
-    {'ami': '30%', '1 Person': 21840, '2 Person': 24960, '3 Person': 28080, '4 Person': 31200, '5 Person': 33700, '6 Person': 36180},
+{'ami': '30%', '1 Person': 21840, '2 Person': 24960, '3 Person': 28080, '4 Person': 31200, '5 Person': 33700, '6 Person': 36180},
     {'ami': '50%', '1 Person': 36400, '2 Person': 41600, '3 Person': 46800, '4 Person': 52000, '5 Person': 56160, '6 Person': 60320},
     {'ami': '60%', '1 Person': 43680, '2 Person': 49920, '3 Person': 56160, '4 Person': 62400, '5 Person': 67392, '6 Person': 72384},
     {'ami': '80%', '1 Person': 58240, '2 Person': 66560, '3 Person': 74880, '4 Person': 83200, '5 Person': 89856, '6 Person': 96512},
@@ -55,11 +47,6 @@ RENT_LIMITS: List[Dict[str, Any]] = [
     {'ami': '120%', '0 Bedroom': 2184, '1 Bedroom': 2340, '2 Bedroom': 2808, '3 Bedroom': 3246, '4 Bedroom': 3621},
 ]
 
-
-# ==============================================================================
-# 2. ENTITY EXTRACTION (Simulating DistilBERT's Output)
-#    In the full system, DistilBERT would predict these entities as token spans.
-# ==============================================================================
 
 def extract_entities(question: str) -> Dict[str, Optional[str]]:
     """

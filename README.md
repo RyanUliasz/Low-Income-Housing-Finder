@@ -17,7 +17,7 @@ Ryan Uliasz
 |"I need the 80 percent AMI income for a family of 5." | $89,856   |
 |"What is the maximum rent at 120% AMI for a studio?" | $2,184   |
 
-### Code [Uploading{
+### Code
  
 import re
 from typing import Dict, List, Optional, Any

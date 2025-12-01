@@ -23,10 +23,12 @@ from typing import Dict, List, Optional, Any
 MEDIAN_INCOME: Dict[str, Any] = {
     'Alachua County': 106700
 }
+
 FAIR_MARKET_RENT: Dict[str, Any] = {
     '0 Bedroom FMR': 1154, '1 Bedroom FMR': 1246, '2 Bedroom FMR': 1493, 
     '3 Bedroom FMR': 1868, '4 Bedroom FMR': 1977
 }
+
 INCOME_LIMITS: List[Dict[str, Any]] = [
     {'ami': '30%', '1 Person': 21840, '2 Person': 24960, '3 Person': 28080, '4 Person': 31200, '5 Person': 33700, '6 Person': 36180},
     {'ami': '50%', '1 Person': 36400, '2 Person': 41600, '3 Person': 46800, '4 Person': 52000, '5 Person': 56160, '6 Person': 60320},
@@ -34,6 +36,7 @@ INCOME_LIMITS: List[Dict[str, Any]] = [
     {'ami': '80%', '1 Person': 58240, '2 Person': 66560, '3 Person': 74880, '4 Person': 83200, '5 Person': 89856, '6 Person': 96512},
     {'ami': '120%', '1 Person': 87360, '2 Person': 99840, '3 Person': 112320, '4 Person': 124800, '5 Person': 134784, '6 Person': 144768},
 ]
+
 RENT_LIMITS: List[Dict[str, Any]] = [
     {'ami': '30%', '0 Bedroom': 546, '1 Bedroom': 585, '2 Bedroom': 702, '3 Bedroom': 811, '4 Bedroom': 905},
     {'ami': '50%', '0 Bedroom': 910, '1 Bedroom': 975, '2 Bedroom': 1170, '3 Bedroom': 1352, '4 Bedroom': 1508},
@@ -41,6 +44,7 @@ RENT_LIMITS: List[Dict[str, Any]] = [
     {'ami': '80%', '0 Bedroom': 1456, '1 Bedroom': 1560, '2 Bedroom': 1872, '3 Bedroom': 2164, '4 Bedroom': 2414},
     {'ami': '120%', '0 Bedroom': 2184, '1 Bedroom': 2340, '2 Bedroom': 2808, '3 Bedroom': 3246, '4 Bedroom': 3621},
 ]
+
 def extract_entities(question: str) -> Dict[str, Optional[str]]:
     """
     Simulates the entity extraction component of the QA model using regex.

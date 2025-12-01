@@ -11,5 +11,6 @@ Vivian Wong [website](vivian-wong.github.io)
 | Input                      | Output                    |
 |----------------------------|---------------------------|
 |"What is the 60% AMI income cap for a 4-person family?" | $62,400   |
-
-
+|"What is the 60% AMI income cap for a 4-person family?" | $62,400   |
+|"What is the 60% AMI income cap for a 4-person family?" | $62,400   |
+|"What is the 60% AMI income cap for a 4-person family?" | $62,400   |

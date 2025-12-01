@@ -10,6 +10,6 @@ Vivian Wong [website](vivian-wong.github.io)
 ### Example Input and Output 
 | Input                      | Output                    |
 |----------------------------|---------------------------|
-|![Input](input_example.jpg) | 1   |
+|"What is the 60% AMI income cap for a 4-person family?" | $62,400   |
 
 

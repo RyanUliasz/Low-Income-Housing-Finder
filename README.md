@@ -20,15 +20,24 @@ Ryan Uliasz
 
 import re
 from typing import Dict, List, Optional, Any
+
+# ==============================================================================
+# 1. CONTEXT CORPUS (Structured Data from All Four Sheets)
+#    Source: HUD & Florida Housing Finance Corporation, Alachua County (2025/2026)
+# ==============================================================================
+
+# Sheet 2: HUD Median Family Income, 2025
 MEDIAN_INCOME: Dict[str, Any] = {
     'Alachua County': 106700
 }
 
+# Sheet 1: HUD Fair Market Rent, 2026
 FAIR_MARKET_RENT: Dict[str, Any] = {
-    '0 Bedroom FMR': 1154, '1 Bedroom FMR': 1246, '2 Bedroom FMR': 1493, 
+    '0 Bedroom FMR': 1154, '1 Bedroom FMR': 1246, '2 Bedroom FMR': 1493,
     '3 Bedroom FMR': 1868, '4 Bedroom FMR': 1977
 }
 
+# Sheet 3: Florida Housing Income Limits, 2025
 INCOME_LIMITS: List[Dict[str, Any]] = [
     {'ami': '30%', '1 Person': 21840, '2 Person': 24960, '3 Person': 28080, '4 Person': 31200, '5 Person': 33700, '6 Person': 36180},
     {'ami': '50%', '1 Person': 36400, '2 Person': 41600, '3 Person': 46800, '4 Person': 52000, '5 Person': 56160, '6 Person': 60320},
@@ -37,6 +46,7 @@ INCOME_LIMITS: List[Dict[str, Any]] = [
     {'ami': '120%', '1 Person': 87360, '2 Person': 99840, '3 Person': 112320, '4 Person': 124800, '5 Person': 134784, '6 Person': 144768},
 ]
 
+# Sheet 4: Florida Housing Rent Limits, 2025
 RENT_LIMITS: List[Dict[str, Any]] = [
     {'ami': '30%', '0 Bedroom': 546, '1 Bedroom': 585, '2 Bedroom': 702, '3 Bedroom': 811, '4 Bedroom': 905},
     {'ami': '50%', '0 Bedroom': 910, '1 Bedroom': 975, '2 Bedroom': 1170, '3 Bedroom': 1352, '4 Bedroom': 1508},
@@ -45,42 +55,49 @@ RENT_LIMITS: List[Dict[str, Any]] = [
     {'ami': '120%', '0 Bedroom': 2184, '1 Bedroom': 2340, '2 Bedroom': 2808, '3 Bedroom': 3246, '4 Bedroom': 3621},
 ]
 
+
+# ==============================================================================
+# 2. ENTITY EXTRACTION (Simulating DistilBERT's Output)
+#    In the full system, DistilBERT would predict these entities as token spans.
+# ==============================================================================
+
 def extract_entities(question: str) -> Dict[str, Optional[str]]:
     """
-    Simulates the entity extraction component of the QA model using regex.
-    This function now also checks for Median Income and FMR queries.
+    Simulates entity extraction using regex (the Baseline approach) for demonstration.
+    Returns the three critical entities needed for lookup.
     """
     lower_question = question.lower()
     entities: Dict[str, Optional[str]] = {
-        'type': None, # income, rent, fmr, median_income
+        'type': None,  # income, rent, fmr, median_income
         'ami': None,
         'size': None
     }
 
-    # 1. Check for specific program/data types first (Median Income / FMR)
+    # Identify specific program/data types first
     if 'median' in lower_question and 'income' in lower_question:
         entities['type'] = 'median_income'
         return entities
     if 'fair market rent' in lower_question or 'fmr' in lower_question:
         entities['type'] = 'fmr'
-        
-    # 2. Check for AMI-based limits
+
+    # Check for AMI-based limits
     elif 'income' in lower_question or 'limit' in lower_question and 'rent' not in lower_question:
         entities['type'] = 'income'
     elif 'rent' in lower_question or 'bedroom' in lower_question:
         entities['type'] = 'rent'
-    
-    # Fallback to income if person/household is mentioned
+
+    # Fallback to income if person/household is mentioned without 'income' keyword
     if entities['type'] is None and ('person' in lower_question or 'household' in lower_question):
         entities['type'] = 'income'
 
-    # 3. Extract AMI Category (Only relevant for 'income' and 'rent' types)
+    # Extract AMI Category (Only relevant for 'income' and 'rent' types)
     if entities['type'] in ['income', 'rent']:
         ami_match = re.search(r'(\d{2,3})%|(\d{2,3})\s*percent', lower_question)
         if ami_match:
+            # Group 1 is the % match, Group 2 is the ' percent' match
             entities['ami'] = f"{ami_match.group(1) or ami_match.group(2)}%"
 
-    # 4. Extract Size (Person or Bedroom)
+    # Extract Size (Person or Bedroom)
     size_match = re.search(r'(\d)\s*-?(person|household|bed|bedroom)', lower_question)
     if size_match:
         number = size_match.group(1)
@@ -88,76 +105,85 @@ def extract_entities(question: str) -> Dict[str, Optional[str]]:
         if 'person' in entity_type or 'household' in entity_type:
             entities['size'] = f"{number} Person"
         elif 'bed' in entity_type:
-            # FMR size columns include " FMR" or " Limit", so we just need the number/type
             entities['size'] = f"{number} Bedroom"
     elif 'studio' in lower_question or '0-bed' in lower_question or '0 bed' in lower_question:
         entities['size'] = '0 Bedroom'
-    
+
     return entities
+
+
+# ==============================================================================
+# 3. RETRIEVAL ALGORITHM (Phase 2: Deterministic Lookup)
+# ==============================================================================
+
 def retrieve_factual_answer(question: str) -> str:
     """
-    Takes a question, extracts key entities, and retrieves the corresponding
-    factual limit from the internal data corpus across all four sheets.
+    Retrieves the factual limit from the internal data corpus across all four sheets.
     """
     entities = extract_entities(question)
     type_ = entities.get('type')
     ami = entities.get('ami')
     size = entities.get('size')
     
-    formatted_value: str
-    source: str
-    year: str
-
+    # Handle Median Income (Sheet 2)
     if type_ == 'median_income':
         value = MEDIAN_INCOME.get('Alachua County')
-        formatted_value = f"${value:,.0f}"
-        source = 'HUD Median Family Income (Sheet 2)'
-        year = '2025'
-        return f"The {year} {source} for Alachua County is: {formatted_value}"
-    
-    elif type_ == 'fmr':
-        # FMR lookups need the size appended with ' FMR'
-        fmr_key = f"{size} FMR" if size else "2 Bedroom FMR" # Default to 2 Bedroom FMR if size is missed
-        value = FAIR_MARKET_RENT.get(fmr_key)
-        
         if value is None:
-            return f"Error: Could not find FMR data for the specified size ({size})."
+            return "Error: Median Family Income data not found for Alachua County."
+        formatted_value = f"${value:,.0f}"
+        return f"The 2025 HUD Median Family Income for Alachua County is: {formatted_value}"
+
+    # Handle Fair Market Rent (FMR) (Sheet 1)
+    elif type_ == 'fmr':
+        # FMR keys need the size appended with ' FMR'
+        fmr_key = f"{size} FMR" if size else None
+        if fmr_key is None:
+            return "Error: Could not identify a unit size for FMR lookup (e.g., 1 Bedroom)."
+
+        value = FAIR_MARKET_RENT.get(fmr_key)
+        if value is None:
+            return f"Data Not Found: Could not find FMR data for the specified size ({size})."
 
         formatted_value = f"${value:,.0f}"
-        source = 'HUD Fair Market Rent (Sheet 1)'
-        year = '2026'
-        return f"The {year} {source} for a {size} unit in Alachua County is: {formatted_value}"
+        return f"The 2026 HUD Fair Market Rent for a {size} unit in Alachua County is: {formatted_value}"
 
+    # Handle AMI-based Limits (Sheets 3 and 4)
     elif type_ in ['income', 'rent']:
         if not ami or not size:
-            return f"Error: For {type_} limits, AMI percentage and size must be specified. Entities found: {entities}"
-            
+            return f"Error: For {type_} limits, the AMI percentage and size must be specified. Entities found: {entities}"
+
         data = INCOME_LIMITS if type_ == 'income' else RENT_LIMITS
         search_key = size
+        source = 'Combined Income Limits (Sheet 3)' if type_ == 'income' else 'Combined Rent Limits (Sheet 4)'
 
-        # Search for the correct AMI row
+        # Find the row matching the AMI percentage
         result_row: Optional[Dict[str, Any]] = next((row for row in data if row['ami'] == ami), None)
 
         if result_row:
+            # Find the value matching the household/unit size
             value = result_row.get(search_key)
             if value is not None:
                 formatted_value = f"${value:,.0f}"
-                source = 'Combined Income Limits (Sheet 3)' if type_ == 'income' else 'Combined Rent Limits (Sheet 4)'
-                year = '2025'
                 return (
-                    f"The {year} {source} at the {ami} category for a {size} "
+                    f"The 2025 {source} at the {ami} category for a {size} "
                     f"household/unit in Alachua County is: {formatted_value}"
                 )
             else:
                 return f"Data Not Found: Found the {ami} row, but no specific limit for a {size} in the data."
         else:
-            return f"Data Not Found: The {ami} category is not listed in the {year} limits for Alachua County."
+            return f"Data Not Found: The {ami} category is not listed in the 2025 limits."
 
     else:
         return f"Error: Could not identify the type of housing data requested (Income, Rent, FMR, or Median Income)."
-        if __name__ == '__main__':
+
+
+# ==============================================================================
+# 4. EXAMPLE USAGE (Main Execution Block)
+# ==============================================================================
+
+if __name__ == '__main__':
     print("--- Low-Income Housing Factual Retrieval Simulator (Python) ---")
-    print("Data Source: All four sheets of Alachua County Housing Limits (2025/2026)\n")
+    print("This script simulates the final retrieval step of the QA system.")
 
     test_questions = [
         # Sheet 3/4 Tests (AMI Limits)
@@ -170,7 +196,10 @@ def retrieve_factual_answer(question: str) -> str:
         
         # Sheet 1 Test (FMR)
         "What is the 2026 Fair Market Rent for a 3 bedroom unit?",
-        "Tell me the FMR for a studio."
+        "Tell me the FMR for a studio.",
+        
+        # Error Test
+        "What is the 70% AMI limit for a 2-person household?" 
     ]
 
     for i, q in enumerate(test_questions):

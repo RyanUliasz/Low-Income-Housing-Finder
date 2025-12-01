@@ -31,14 +31,13 @@ FAIR_MARKET_RENT: Dict[str, Any] = {
 }
 
 INCOME_LIMITS: List[Dict[str, Any]] = [
-{'ami': '30%', '1 Person': 21840, '2 Person': 24960, '3 Person': 28080, '4 Person': 31200, '5 Person': 33700, '6 Person': 36180},
+    {'ami': '30%', '1 Person': 21840, '2 Person': 24960, '3 Person': 28080, '4 Person': 31200, '5 Person': 33700, '6 Person': 36180},
     {'ami': '50%', '1 Person': 36400, '2 Person': 41600, '3 Person': 46800, '4 Person': 52000, '5 Person': 56160, '6 Person': 60320},
     {'ami': '60%', '1 Person': 43680, '2 Person': 49920, '3 Person': 56160, '4 Person': 62400, '5 Person': 67392, '6 Person': 72384},
     {'ami': '80%', '1 Person': 58240, '2 Person': 66560, '3 Person': 74880, '4 Person': 83200, '5 Person': 89856, '6 Person': 96512},
     {'ami': '120%', '1 Person': 87360, '2 Person': 99840, '3 Person': 112320, '4 Person': 124800, '5 Person': 134784, '6 Person': 144768},
 ]
 
-# Sheet 4: Florida Housing Rent Limits, 2025
 RENT_LIMITS: List[Dict[str, Any]] = [
     {'ami': '30%', '0 Bedroom': 546, '1 Bedroom': 585, '2 Bedroom': 702, '3 Bedroom': 811, '4 Bedroom': 905},
     {'ami': '50%', '0 Bedroom': 910, '1 Bedroom': 975, '2 Bedroom': 1170, '3 Bedroom': 1352, '4 Bedroom': 1508},
@@ -97,11 +96,6 @@ def extract_entities(question: str) -> Dict[str, Optional[str]]:
         entities['size'] = '0 Bedroom'
 
     return entities
-
-
-# ==============================================================================
-# 3. RETRIEVAL ALGORITHM (Phase 2: Deterministic Lookup)
-# ==============================================================================
 
 def retrieve_factual_answer(question: str) -> str:
     """
@@ -163,10 +157,6 @@ def retrieve_factual_answer(question: str) -> str:
     else:
         return f"Error: Could not identify the type of housing data requested (Income, Rent, FMR, or Median Income)."
 
-
-# ==============================================================================
-# 4. EXAMPLE USAGE (Main Execution Block)
-# ==============================================================================
 
 if __name__ == '__main__':
     print("--- Low-Income Housing Factual Retrieval Simulator (Python) ---")
